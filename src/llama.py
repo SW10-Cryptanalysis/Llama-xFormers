@@ -1,17 +1,17 @@
 import torch
 from transformers import LlamaConfig, LlamaForCausalLM
 
-CIPHERTEXT_LEN = 8192
+CIPHERTEXT_LEN = 16_384
 
 config = LlamaConfig(
     vocab_size=1024,  # We need enough for each homophone + 26 english letters + start/end/pad
     max_position_embeddings=CIPHERTEXT_LEN * 2,
     hidden_size=384,
-    num_hidden_layers=12,
+    num_hidden_layers=16,
     intermediate_size=1536,
     num_attention_heads=6,
     num_key_value_heads=2,
-    rope_theta=500_000.0,
+    rope_theta=4_000_000.0,
     attn_implementation="sdpa",
     hidden_act="silu",
     initializer_rage=0.02,
