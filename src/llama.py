@@ -2,23 +2,32 @@ import torch
 from transformers import LlamaConfig, LlamaForCausalLM
 
 config = LlamaConfig(
-    vocab_size=500,  # Your custom character/integer vocabulary
-    max_position_embeddings=8192,  # Long context for your ciphers
-    hidden_size=512,  # Small hidden size
-    num_hidden_layers=6,  # Shallow depth
-    num_attention_heads=8,
-    intermediate_size=2048,
+    vocab_size=1024,  # We need enough for each homophone + 26 english letters + start/end/pad
+    max_position_embeddings=8192,
+    hidden_size=384,
+    num_hidden_layers=12,
+    intermediate_size=1536,
+    num_attention_heads=6,
+    num_key_value_heads=2,
+    rope_theta=500_000.0,
+    attn_implementation="sdpa",
+    hidden_act="silu",
+    initializer_rage=0.02,
+    rms_norm_eps=1e-5,
 )
 
-model = (
-    LlamaForCausalLM._from_config(config, attn_implementation="sdpa")
-    .to(torch.bfloat16)
-    .to("cuda")
-)
+model = LlamaForCausalLM(config).to(torch.bfloat16).to("cuda")
 
 
 def test():
-    print(f"Parameters: {model.num_parameters():,}")
+    print(f"Model Configured: Baby Llama 3 (Cipher Edition)")
+    print(f"Parameters:       {model.num_parameters():,}")
+    print(f"Vocab Capacity:   {config.vocab_size} (Safe for >500 symbols)")
+    print(f"Context Window:   {config.max_position_embeddings}")
+
+    # Quick sanity check on memory
+    mem_params = model.get_memory_footprint() / 1e9
+    print(f"VRAM for Weights: {mem_params:.4f} GB (Tiny!)")
 
 
 if __name__ == "__main__":
