@@ -24,7 +24,7 @@ model = LlamaForCausalLM(config).to(torch.bfloat16).to("cuda")
 def test():
     print(f"Model Configured: Baby Llama 3 (Cipher Edition)")
     print(f"Parameters:       {model.num_parameters():,}")
-    print(f"Vocab Capacity:   {config.vocab_size} (Safe for >500 symbols)")
+    print(f"Vocab Capacity:   {config.vocab_size}")
     print(f"Context Window:   {config.max_position_embeddings}")
 
     # Quick sanity check on memory
