@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from config import Config
 from model import get_model
 from transformers import Trainer, TrainingArguments
+from torch.nn.attention import sdpa_kernel, SDPBackend
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
@@ -21,9 +22,10 @@ class CipherPlainData(Dataset):
     def __getitem__(self, idx):
         # TODO: Overwrite below with actual tensor data here, once we have it
         # Below can be deleted then, it is just for testing
+        seq = torch.randint(0, Config.vocab_size, (Config.max_context,))
         return {
-            "input_ids": torch.randint(0, Config.vocab_size, (Config.max_context,)),
-            "labels": torch.randint(0, Config.vocab_size, (Config.max_context,)),
+            "input_ids": seq,
+            "labels": seq.clone(),
         }
 
 
@@ -51,9 +53,7 @@ def train():
 
     print(f"Training on {torch.cuda.get_device_name(0)}...")
 
-    with torch.backends.cuda.sdp_kernel(
-        enable_flash=True, enable_math=False, enable_mem_efficient=True
-    ):
+    with sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION]):
         trainer.train()
 
     trainer.save_model(f"{Config.output_dir}/model")
