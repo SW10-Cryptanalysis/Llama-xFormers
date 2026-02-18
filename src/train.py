@@ -9,6 +9,8 @@ from torch.nn.attention import sdpa_kernel, SDPBackend
 from torch.utils.data import Dataset
 from config import Config
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
 class CipherPlainData(Dataset):
     def __init__(self, directory_path):
         self.file_paths = glob.glob(os.path.join(directory_path, "*.json"))
