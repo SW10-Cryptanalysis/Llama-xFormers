@@ -1,8 +1,11 @@
 import torch
+import os
 from torch.utils.data import Dataset
 from config import Config
 from model import get_model
 from transformers import Trainer, TrainingArguments
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
 class CipherPlainData(Dataset):
@@ -47,7 +50,12 @@ def train():
     )
 
     print(f"Training on {torch.cuda.get_device_name(0)}...")
-    trainer.train()
+
+    with torch.backends.cuda.sdp_kernel(
+        enable_flash=True, enable_math=False, enable_mem_efficient=True
+    ):
+        trainer.train()
+
     trainer.save_model(f"{Config.output_dir}/model")
 
 
