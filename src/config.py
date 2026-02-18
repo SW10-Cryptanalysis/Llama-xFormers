@@ -23,11 +23,7 @@ class Config:
     batch_size: int = 1
     grad_accum: int = 16
     learning_rate: float = 3e-4
-    epochs: int = 5
-
-    # This should be more memory efficient https://deepwiki.com/huggingface/transformers/3.2-training-configuration
-    bf16: bool = True
-    optim: str = "adamw_8bit"
+    epochs: int = 1
     grad_checkpoint: bool = True
     log_steps: int = 10
     save_steps = 500

@@ -33,8 +33,6 @@ def train():
         per_device_train_batch_size=Config.batch_size,
         gradient_accumulation_steps=Config.grad_accum,
         learning_rate=Config.learning_rate,
-        bf16=Config.bf16,
-        optim=Config.optim,
         gradient_checkpointing=Config.grad_checkpoint,
         logging_steps=Config.log_steps,
         save_steps=Config.save_steps,
