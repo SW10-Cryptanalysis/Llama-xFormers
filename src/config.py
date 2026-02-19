@@ -10,7 +10,9 @@ class Config:
     # ARCHITECTURE
 
     # Vocab needs to be larger than unique homophone count + unique letter count + 3 (start/end/padding)
-    vocab_size: int = 1024
+    unique_homophones: int = 500
+    unique_letters: int = 26
+    vocab_size: int = unique_homophones + unique_letters + 3
     # Input is ciphertext + plaintext
     max_context: int = TOTAL_SEQ
     dims: int = 384
