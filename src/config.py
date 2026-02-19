@@ -9,7 +9,7 @@ OUTPUT_DIR = "./outputs"
 class Config:
     # ARCHITECTURE
 
-    # Vocab needs to be larger than unique homophone count + unique letter count + 3 (start/end/padding)
+    # Vocab needs to be larger than unique homophone count + unique letter count + 1 (start/end/padding)
     unique_homophones: int = 500
     unique_letters: int = 26
     vocab_size: int = unique_homophones + unique_letters + 1
