@@ -20,8 +20,8 @@ class CipherPlainData(Dataset):
         # Let's assume ciphertext symbols are tokens 0-500
         # Let's assume plaintext 'a'-'z' are tokens 501-526
         # Token 527 is our separator/SOS token
-        self.char_offset = 501
-        self.sep_token = 527
+        self.char_offset = Config.unique_homophones + 1
+        self.sep_token = self.char_offset + Config.unique_letters
 
     def __len__(self):
         return len(self.file_paths)
