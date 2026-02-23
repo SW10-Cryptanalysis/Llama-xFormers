@@ -15,26 +15,32 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 class CipherPlainData(Dataset):
     def __init__(self):
-        self.data = []
+        self.file_refs = []
 
         zip_files = glob.glob(os.path.join(Config.data_dir, "*.zip"))
 
         for zip_path in zip_files:
             with zipfile.ZipFile(zip_path, "r") as z:
-                for file_name in z.namelist():
-                    if file_name.endswith(".json"):
-                        with z.open(file_name) as f:
-                            json_content = json.load(f)
-                            self.data.append(json_content)
+                names = [n for n in z.namelist() if n.endswith(".json")]
+                for file_name in names:
+                    self.file_refs.append((zip_path, file_name))
+
+        self.handles = {}
 
         self.sep_token = Config.unique_homophones + 1
         self.char_offset = self.sep_token + 1
 
     def __len__(self):
-        return len(self.data)
+        return len(self.file_refs)
 
     def __getitem__(self, idx):
-        item = self.data[idx]
+        zip_path, file_name = self.file_refs[idx]
+
+        if zip_path not in self.handles:
+            self.handles[zip_path] = zipfile.ZipFile(zip_path, "r")
+
+        with self.handles[zip_path].open(file_name) as f:
+            item = json.load(f)
 
         # Convert ciphertext string to integers
         cipher_ids = [int(x) for x in item["ciphertext"].split()]
@@ -77,6 +83,8 @@ def train():
         save_steps=Config.save_steps,
         # OOM without below
         bf16=True,
+        dataloader_num_workers=4,
+        dataloader_pin_memory=True,
     )
 
     trainer = Trainer(
