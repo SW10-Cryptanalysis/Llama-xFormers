@@ -43,7 +43,7 @@ class Config:
     output_dir: str = OUTPUT_DIR
     data_dir: str = DATA_DIR
 
-    def __post_init__(self):
+    def load_homophones(self):
         homophone_path = os.path.join(self.data_dir, HOMOPHONE_FILE)
         if os.path.exists(homophone_path):
             try:

@@ -14,10 +14,11 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
 class CipherPlainData(Dataset):
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.file_refs = []
 
-        zip_files = glob.glob(os.path.join(Config.data_dir, "*.zip"))
+        zip_files = glob.glob(os.path.join(config.data_dir, "*.zip"))
 
         for zip_path in zip_files:
             with zipfile.ZipFile(zip_path, "r") as z:
@@ -27,7 +28,7 @@ class CipherPlainData(Dataset):
 
         self.handles = {}
 
-        self.sep_token = Config.unique_homophones + 1
+        self.sep_token = config.unique_homophones + 1
         self.char_offset = self.sep_token + 1
 
     def __len__(self):
@@ -52,13 +53,13 @@ class CipherPlainData(Dataset):
         input_ids = cipher_ids + [self.sep_token] + plain_ids
 
         # Truncate to ensure it fits model context
-        input_ids = input_ids[: Config.max_context]
+        input_ids = input_ids[: self.config.max_context]
 
         # Copy input ids
         labels = list(input_ids)
 
         # Padding
-        padding_len = Config.max_context - len(input_ids)
+        padding_len = self.config.max_context - len(input_ids)
         input_ids += [0] * padding_len
         labels += [-100] * padding_len
 
@@ -69,18 +70,21 @@ class CipherPlainData(Dataset):
 
 
 def train():
-    model = get_model()
+    config = Config()
+    config.load_homophones()
+
+    model = get_model(config)
 
     args = TrainingArguments(
-        output_dir=Config.output_dir,
-        num_train_epochs=Config.epochs,
-        per_device_train_batch_size=Config.batch_size,
-        gradient_accumulation_steps=Config.grad_accum,
-        learning_rate=Config.learning_rate,
+        output_dir=config.output_dir,
+        num_train_epochs=config.epochs,
+        per_device_train_batch_size=config.batch_size,
+        gradient_accumulation_steps=config.grad_accum,
+        learning_rate=config.learning_rate,
         # Faster to train without grad checkpoint
         gradient_checkpointing=False,
-        logging_steps=Config.log_steps,
-        save_steps=Config.save_steps,
+        logging_steps=config.log_steps,
+        save_steps=config.save_steps,
         # OOM without below
         bf16=True,
         dataloader_num_workers=4,
@@ -90,7 +94,7 @@ def train():
     trainer = Trainer(
         model=model,
         args=args,
-        train_dataset=CipherPlainData(),
+        train_dataset=CipherPlainData(config),
     )
 
     print(f"Training on {torch.cuda.get_device_name(0)}...")
@@ -98,7 +102,7 @@ def train():
     with sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION]):
         trainer.train()
 
-    trainer.save_model(f"{Config.output_dir}/model")
+    trainer.save_model(f"{config.output_dir}/model")
 
 
 if __name__ == "__main__":
