@@ -51,5 +51,6 @@ class Config:
             except (ValueError, IOError) as e:
                 print(f"Warning - Could not read file: {HOMOPHONE_FILE}")
                 print(f"Using default value: {self.unique_homophones}")
+                print(f"{e}")
 
         self.vocab_size = self.unique_homophones + self.unique_letters + BUFFER
