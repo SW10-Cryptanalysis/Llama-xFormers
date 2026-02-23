@@ -14,7 +14,12 @@ dependencies = [
 tool.uv.required-environments = ["macosx_26_0_x86_64"]
 
 [dependency-groups]
-dev = ["ruff>=0.15.2"]
+dev = [
+	"pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+	"ruff>=0.15.2"
+]
 
 [tool.ruff]
 line-length = 88
