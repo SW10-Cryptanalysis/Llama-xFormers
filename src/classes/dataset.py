@@ -13,6 +13,18 @@ class CipherPlainDataItem(TypedDict):
 
     input_ids: torch.Tensor
     labels: torch.Tensor
+    
+class CipherItem(TypedDict):
+    """TypedDict for CipherItem."""
+    
+    ciphertext: str
+    plaintext: str
+    length: int
+    num_symbols: int
+    difficulty: int
+    key: dict
+    source_id: str
+    source_name: str
 
 class CipherPlainData(Dataset):
 	"""CipherPlainData dataset.
@@ -82,6 +94,8 @@ class CipherPlainData(Dataset):
 		with self.handles[zip_path].open(file_name) as f:
 			item = json.load(f)
 
+		self._validate_item(item)
+
 		# Convert ciphertext string to integers
 		cipher_ids = [int(x) for x in item["ciphertext"].split()]
 
@@ -113,3 +127,17 @@ class CipherPlainData(Dataset):
 			"input_ids": torch.tensor(input_ids, dtype=torch.long),
 			"labels": torch.tensor(labels, dtype=torch.long),
 		}
+  
+	def _validate_item(self, item: dict) -> None:
+		"""Validates that the item is a valid dictionary.
+
+		Args:
+			item (dict): The item to validate.
+
+		Raises:
+			ValueError: If the item is not a valid dictionary.
+
+		"""
+		for key in CipherItem.__annotations__.keys():
+			if key not in item:
+				raise ValueError(f"Item is missing key: {key}")
