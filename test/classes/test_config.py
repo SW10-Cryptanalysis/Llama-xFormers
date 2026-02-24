@@ -3,10 +3,11 @@ from classes import Config
 from pathlib import Path
 import classes.config as config_module
 
+
 class TestConfigInit:
 	def test_init_defaults(self):
 		config = Config()
-  
+
 		source_file = Path(config_module.__file__)
 
 		assert config.unique_homophones == 500
@@ -27,8 +28,6 @@ class TestConfigInit:
 		assert config.output_dir == source_file.parent.parent.parent / "outputs"
 		assert config.data_dir == source_file.parent.parent.parent.parent / "Ciphers"
 
-		print(config.output_dir)
-		print(config.data_dir)
 
 class TestConfigLoadHomophones:
 	def test_load_homophones_success(self, tmp_path):
