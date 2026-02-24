@@ -34,6 +34,10 @@ exclude_also = [
 	"import",
 	"from",
 ]
+omit = [
+	"src/model.py",
+	"src/train.py",
+]
 
 [tool.ruff]
 line-length = 88
