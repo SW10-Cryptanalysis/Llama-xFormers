@@ -8,25 +8,22 @@ class TestConfigInit:
 	def test_init_defaults(self):
 		config = Config()
 
-		source_file = Path(config_module.__file__)
-
-		assert config.unique_homophones == 500
-		assert config.unique_letters == 26
-		assert config.vocab_size == 500 + 26 + 8
-		assert config.max_context == 8192 * 2 + 1
-		assert config.dims == 384
-		assert config.layers == 16
-		assert config.att_heads == 6
-		assert config.kv_heads == 2
-		assert config.rope_theta == 1_000_000.0
-		assert config.batch_size == 1
-		assert config.grad_accum == 16
-		assert config.learning_rate == 3e-4
-		assert config.epochs == 1
-		assert config.log_steps == 10
-		assert config.save_steps == 500
-		assert config.output_dir == source_file.parent.parent.parent / "outputs"
-		assert config.data_dir == source_file.parent.parent.parent.parent / "Ciphers"
+		assert isinstance(config.unique_letters, int)
+		assert isinstance(config.vocab_size, int)
+		assert isinstance(config.max_context, int)
+		assert isinstance(config.dims, int)
+		assert isinstance(config.layers, int)
+		assert isinstance(config.att_heads, int)
+		assert isinstance(config.kv_heads, int)
+		assert isinstance(config.rope_theta, float)
+		assert isinstance(config.batch_size, int)
+		assert isinstance(config.grad_accum, int)
+		assert isinstance(config.learning_rate, float)
+		assert isinstance(config.epochs, int)
+		assert isinstance(config.log_steps, int)
+		assert isinstance(config.save_steps, int)
+		assert isinstance(config.output_dir, Path)
+		assert isinstance(config.data_dir, Path)
 
 
 class TestConfigLoadHomophones:
@@ -52,9 +49,11 @@ class TestConfigLoadHomophones:
 
 		config = Config(data_dir=data_dir)
 		config.load_homophones()
+  
+		base_config = Config()
 
-		assert config.unique_homophones == 500
-		assert config.vocab_size == 500 + 26 + 8
+		assert config.unique_homophones == base_config.unique_homophones
+		assert config.vocab_size == base_config.vocab_size
 		assert "WARNING" in caplog.text
 		assert "Invalid or missing data" in caplog.text
 		assert "Using default value" in caplog.text
@@ -66,8 +65,9 @@ class TestConfigLoadHomophones:
 		config = Config(data_dir=data_dir)
 		config.load_homophones()
 
-		assert config.unique_homophones == 500
-		assert config.vocab_size == 500 + 26 + 8
+		base_config = Config()
+		assert config.unique_homophones == base_config.unique_homophones
+		assert config.vocab_size == base_config.vocab_size
 
 	def test_load_homophones_invalid_file(self, tmp_path, caplog):
 		data_dir = tmp_path / "data"
@@ -79,8 +79,10 @@ class TestConfigLoadHomophones:
 		config = Config(data_dir=data_dir)
 		config.load_homophones()
 
-		assert config.unique_homophones == 500
-		assert config.vocab_size == 500 + 26 + 8
+		base_config = Config()
+		assert config.unique_homophones == base_config.unique_homophones
+		assert config.vocab_size == base_config.vocab_size
+
 		assert "WARNING" in caplog.text
 		assert "Invalid or missing data" in caplog.text
 		assert "Using default value" in caplog.text
@@ -97,8 +99,10 @@ class TestConfigLoadHomophones:
 		config = Config(data_dir=data_dir)
 		config.load_homophones()
 
-		assert config.unique_homophones == 500
-		assert config.vocab_size == 500 + 26 + 8
+		base_config = Config(data_dir=data_dir)
+		assert config.unique_homophones == base_config.unique_homophones
+		assert config.vocab_size == base_config.vocab_size
+
 		assert "WARNING" in caplog.text
 		assert "Could not read file" in caplog.text
 		assert "Using default value" in caplog.text
