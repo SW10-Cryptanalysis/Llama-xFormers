@@ -1,7 +1,6 @@
 import json
 from classes import Config
 from pathlib import Path
-import classes.config as config_module
 
 
 class TestConfigInit:
@@ -49,7 +48,7 @@ class TestConfigLoadHomophones:
 
 		config = Config(data_dir=data_dir)
 		config.load_homophones()
-  
+
 		base_config = Config()
 
 		assert config.unique_homophones == base_config.unique_homophones
