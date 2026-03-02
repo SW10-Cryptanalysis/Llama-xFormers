@@ -18,7 +18,12 @@ logger.addHandler(handler)
 
 def train() -> None:
 	"""Start training the model with the given config."""
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--spaces", action="store_true")
+	cmd_args = parser.parse_args()
+
 	config = Config()
+	config.use_spaces = cmd_args.spaces
 	config.load_homophones()
 
 	model = get_model(config)

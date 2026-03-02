@@ -55,6 +55,7 @@ class CipherPlainData(Dataset):
 		"""
 		self.config = config
 		self.file_refs = []
+		self.use_spaces = False
 
 		target_dir = data_path if data_path else config.data_dir
 		zip_files = glob.glob(os.path.join(target_dir, "*.zip"))
@@ -67,8 +68,10 @@ class CipherPlainData(Dataset):
 
 		self.handles = {}
 
-		self.sep_token = config.unique_homophones + 1
-		self.char_offset = self.sep_token + 1
+		self.plain_space_token = self.config.unique_homophones + 1
+		self.sep_token = self.space_token + 1
+		self.cipher_space_token = self.sep_token + 1
+		self.char_offset = self.cipher_space_token + 1
 
 	def __len__(self) -> int:
 		"""Get the length of the dataset.
@@ -99,14 +102,27 @@ class CipherPlainData(Dataset):
 
 		self._validate_item(item)
 
+		text_key = "plaintext_with_boundaries" if self.config.use_spaces else "plaintext"
+		cipher_key = "ciphertext_with_boundaries" if self.config.use_spaces else "ciphertext"
+
+		raw_cipher = item[cipher_key].split()
+		cipher_ids = []
+
 		# Convert ciphertext string to integers
-		cipher_ids = [int(x) for x in item["ciphertext"].split()]
+		for x in raw_cipher:
+			if x == "_":
+				cipher_ids.append(self.cipher_space_token)
+			else:
+				cipher_ids.append(int(x))
 
 		# Make a-z map to 0-25 and add the char_offset so it does
 		# not collide with cipher_ids
 		plain_ids = []
-		for c in item["plaintext"]:
-			if "a" <= c <= "z":
+		for c in item[text_key]:
+			if c == "_":
+				plain_ids.append(self.plain_space_token)
+
+			elif "a" <= c <= "z":
 				token_id = ord(c) - ord("a") + self.char_offset
 				plain_ids.append(token_id)
 			else:
