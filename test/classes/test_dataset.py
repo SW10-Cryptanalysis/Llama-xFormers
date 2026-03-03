@@ -157,3 +157,76 @@ class TestCipherPlainDataGetItem:
 		with pytest.raises(ValueError) as e:
 			dataset[0]
 		assert "Item is missing key: plaintext" in str(e.value)
+
+
+class TestCipherPlainDataSpacesInit:
+	def test_init_keys_no_spaces(self):
+		config = Config(use_spaces=False)
+		dataset = CipherPlainData(config)
+		assert dataset.text_key == "plaintext"
+		assert dataset.cipher_key == "ciphertext"
+
+	def test_init_keys_with_spaces(self):
+		config = Config(use_spaces=True)
+		dataset = CipherPlainData(config)
+		assert dataset.text_key == "plaintext_with_boundaries"
+		assert dataset.cipher_key == "ciphertext_with_boundaries"
+
+	def test_token_offsets_consistency(self):
+		config = Config(unique_homophones=100)
+		dataset = CipherPlainData(config)
+
+		# Test if [CIPHER] + [SEP] + [SPACE] + [CHAR OFFSET]
+		assert dataset.sep_token == 101
+		assert dataset.space_token == dataset.sep_token + 1
+		assert dataset.char_offset == dataset.space_token + 1
+
+
+class TestCipherPlainDataMapping:
+	@pytest.fixture
+	def spaced_cipher_item(self):
+		return {
+            "plaintext": "ab",
+            "plaintext_with_boundaries": "a_b",
+            "ciphertext": "1 2",
+            "ciphertext_with_boundaries": "1 _ 2",
+            "length": 2, "num_symbols": 2, "difficulty": 1, 
+            "key": {"a": [1], "b": [2]},
+            "source_id": "1", "source_name": "test"
+        }
+
+	def test_getitem_mapping_with_spaces(self, tmp_path, spaced_cipher_item):
+		data_dir = tmp_path / "data"
+		data_dir.mkdir()
+		write_cipher(data_dir, spaced_cipher_item)
+        
+		config = Config(data_dir=data_dir, use_spaces=True, unique_homophones=10)
+		dataset = CipherPlainData(config)
+		
+		item = dataset[0]
+		ids = item["input_ids"].tolist()
+        
+        # [Cipher: 1, Space, 2] + [SEP] + [Plain: 'a', Space, 'b']
+        # IDs: [1, 12, 2, 11, 13, 12, 14]
+		
+		assert ids[0] == 1                           # Cipher '1'
+		assert ids[1] == dataset.space_token          # Cipher '_'
+		assert ids[2] == 2                           # Cipher '2'
+		assert ids[3] == dataset.sep_token            # [SEP]
+		assert ids[4] == dataset.char_offset          # 'a'
+		assert ids[5] == dataset.space_token          # Plain '_'
+		assert ids[6] == dataset.char_offset + 1      # 'b'
+		
+	def test_getitem_mapping_no_spaces(self, tmp_path, spaced_cipher_item):
+		data_dir = tmp_path / "data"
+		data_dir.mkdir()
+		write_cipher(data_dir, spaced_cipher_item)
+		
+		config = Config(data_dir=data_dir, use_spaces=False, unique_homophones=10)
+		dataset = CipherPlainData(config)
+		
+		item = dataset[0]
+		ids = item["input_ids"].tolist()
+		
+		# Should ignore the underscores in the JSON
+		assert dataset.space_token not in ids[:10] # Space shouldn't be in the active sequence

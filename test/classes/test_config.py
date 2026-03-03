@@ -105,3 +105,21 @@ class TestConfigLoadHomophones:
 		assert "WARNING" in caplog.text
 		assert "Could not read file" in caplog.text
 		assert "Using default value" in caplog.text
+
+class TestConfigSpaces:
+	def test_use_spaces_default(self):
+		config = Config()
+		assert config.use_spaces is False
+
+	def test_vocab_size_with_spaces_math(self, tmp_path):
+		data_dir = tmp_path / "data"
+		data_dir.mkdir()
+		meta_file = data_dir / "metadata.json"
+		meta_file.write_text(json.dumps({"max_symbol_id": 100}))
+
+		config = Config(data_dir=data_dir, use_spaces=True)
+		config.load_homophones()
+
+		# Highest ID used is unique_homophones + 4 (sep, space, offset + 25)
+        # 100 + 29 = 129. Buffer assumed to be 8 (100+26+8=134).
+		assert config.vocab_size > (config.unique_homophones + 29)
