@@ -3,7 +3,7 @@
 Causal LM with xFormers attention
 
 ## Usage
-1. Queue up job with ``sbatch train.slurm``
+1. Queue up job with ``sbatch train.slurm`` or ``sbatch train.slurm --spaces``to train with word boundaries
 2. Monitor with ``﻿tail -f logs/train_live_<JOB_ID>.log``
 
 ## Configuration
@@ -15,3 +15,9 @@ Make sure you change `DATA_DIR` parameter in `src/config.py` to the correct path
 
 ### Rope-theta
 Remember to adjust this parameter when changing cipher lengths... A good rule of thumb is 1mil for ciphers of length 8192.
+
+## Token visualisation
+
+| PAD | Cipher start | Cipher end | SEP | SPACE | a..   | ..z    |
+|-----|--------------|------------|-----|-------|-------|--------|
+| 0   | 1..          | ..N        | N+1 | N+2   | N+3.. | ..N+29 |
