@@ -55,7 +55,7 @@ class Config:
 	unique_letters: int = UNIQUE_LETTER_COUNT
 
 	# Vocab needs to be larger than unique homophone count + unique letter count
-	# + buffer (start/end/padding, etc)
+	# + buffer (start/end/padding, etc) and maybe spacing "_"
 	vocab_size: int = UNIQUE_HOMOPHONE_COUNT + UNIQUE_LETTER_COUNT + BUFFER
 	# Input is ciphertext + sep + plaintext
 	max_context: int = TOTAL_SEQ + 1
@@ -72,6 +72,7 @@ class Config:
 	epochs: int = 1
 	log_steps: int = 10
 	save_steps: int = 500
+	use_spaces: bool = False
 
 	# SYSTEM
 	output_dir: Path = OUTPUT_DIR

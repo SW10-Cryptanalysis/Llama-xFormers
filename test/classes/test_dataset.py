@@ -81,7 +81,8 @@ class TestCipherPlainDataInit:
 		assert data.file_refs == []
 		assert data.handles == {}
 		assert data.sep_token == data.config.unique_homophones + 1
-		assert data.char_offset == data.sep_token + 1
+		assert data.space_token == data.sep_token + 1
+		assert data.char_offset == data.space_token + 1
 
 	def test_init_with_file_refs(self, tmp_path):
 		"""Test that the CipherPlainData class can be initialized with file refs."""
