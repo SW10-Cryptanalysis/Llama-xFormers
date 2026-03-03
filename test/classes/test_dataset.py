@@ -190,7 +190,7 @@ class TestCipherPlainDataMapping:
             "plaintext_with_boundaries": "a_b",
             "ciphertext": "1 2",
             "ciphertext_with_boundaries": "1 _ 2",
-            "length": 2, "num_symbols": 2, "difficulty": 1, 
+            "length": 2, "num_symbols": 2, "difficulty": 1,
             "key": {"a": [1], "b": [2]},
             "source_id": "1", "source_name": "test"
         }
@@ -199,16 +199,16 @@ class TestCipherPlainDataMapping:
 		data_dir = tmp_path / "data"
 		data_dir.mkdir()
 		write_cipher(data_dir, spaced_cipher_item)
-        
+
 		config = Config(data_dir=data_dir, use_spaces=True, unique_homophones=10)
 		dataset = CipherPlainData(config)
-		
+
 		item = dataset[0]
 		ids = item["input_ids"].tolist()
-        
+
         # [Cipher: 1, Space, 2] + [SEP] + [Plain: 'a', Space, 'b']
         # IDs: [1, 12, 2, 11, 13, 12, 14]
-		
+
 		assert ids[0] == 1                           # Cipher '1'
 		assert ids[1] == dataset.space_token          # Cipher '_'
 		assert ids[2] == 2                           # Cipher '2'
@@ -216,17 +216,17 @@ class TestCipherPlainDataMapping:
 		assert ids[4] == dataset.char_offset          # 'a'
 		assert ids[5] == dataset.space_token          # Plain '_'
 		assert ids[6] == dataset.char_offset + 1      # 'b'
-		
+
 	def test_getitem_mapping_no_spaces(self, tmp_path, spaced_cipher_item):
 		data_dir = tmp_path / "data"
 		data_dir.mkdir()
 		write_cipher(data_dir, spaced_cipher_item)
-		
+
 		config = Config(data_dir=data_dir, use_spaces=False, unique_homophones=10)
 		dataset = CipherPlainData(config)
-		
+
 		item = dataset[0]
 		ids = item["input_ids"].tolist()
-		
+
 		# Should ignore the underscores in the JSON
 		assert dataset.space_token not in ids[:10] # Space shouldn't be in the active sequence
