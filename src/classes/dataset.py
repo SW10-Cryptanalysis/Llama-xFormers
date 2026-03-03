@@ -109,7 +109,7 @@ class CipherPlainData(Dataset):
 
 		raw_cipher = item[self.cipher_key].split()
 		cipher_ids = [
-			self.space_token if x == "_" else int(x) 
+			self.space_token if x == "_" else int(x)
 			for x in raw_cipher
 		]
 
