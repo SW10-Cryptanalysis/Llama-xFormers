@@ -69,7 +69,7 @@ def train() -> None:
 		save_dest = f"{config.output_dir}/model_with_spaces"
 	else:
 		save_dest = f"{config.output_dir}/model"
-	
+
 	trainer.save_model(save_dest)
 
 
