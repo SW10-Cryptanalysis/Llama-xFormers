@@ -65,7 +65,12 @@ def train() -> None:
 	with sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION]):
 		trainer.train()
 
-	trainer.save_model(f"{config.output_dir}/model")
+	if config.use_spaces:
+		save_dest = f"{config.output_dir}/model_with_spaces"
+	else:
+		save_dest = f"{config.output_dir}/model"
+	
+	trainer.save_model(save_dest)
 
 
 if __name__ == "__main__":
