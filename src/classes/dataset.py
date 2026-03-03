@@ -45,7 +45,7 @@ class CipherPlainData(Dataset):
 
 	"""
 
-	def __init__(self, config: Config, data_path: Path = None) -> None:
+	def __init__(self, config: Config, data_path: Path | None = None) -> None:
 		"""Initialize the CipherPlainData dataset.
 
 		Args:
@@ -108,14 +108,10 @@ class CipherPlainData(Dataset):
 		self._validate_item(item)
 
 		raw_cipher = item[self.cipher_key].split()
-		cipher_ids = []
-
-		# Convert ciphertext string to integers
-		for x in raw_cipher:
-			if x == "_":
-				cipher_ids.append(self.space_token)
-			else:
-				cipher_ids.append(int(x))
+		cipher_ids = [
+			self.space_token if x == "_" else int(x) 
+			for x in raw_cipher
+		]
 
 		# Make a-z map to 0-25 and add the char_offset so it does
 		# not collide with cipher_ids
