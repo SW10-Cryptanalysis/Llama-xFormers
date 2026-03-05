@@ -2,6 +2,7 @@ import pytest
 from preprocess import RawToArrowConverter
 from classes import Config
 
+
 @pytest.fixture
 def sample_payload():
 	"""Provide a sample dictionary as it would appear when loaded from JSON."""
@@ -9,8 +10,9 @@ def sample_payload():
 		"ciphertext": "1 2",
 		"plaintext": "ab",
 		"ciphertext_with_boundaries": "1 _ 2",
-		"plaintext_with_boundaries": "a _ b"
+		"plaintext_with_boundaries": "a _ b",
 	}
+
 
 def test_mapping_logic_no_spaces(sample_payload):
 	# 1. Setup Config
@@ -19,8 +21,8 @@ def test_mapping_logic_no_spaces(sample_payload):
 	# 2. Manually set tokens (if your Config doesn't do this in __init__)
 	cfg.bos_token_id = 100
 	cfg.eos_token_id = 101
-	cfg.sep_token = 11
-	cfg.space_token = 12
+	cfg.sep_token_id = 11
+	cfg.space_token_id = 12
 	cfg.char_offset = 13
 	cfg.max_context = 100
 
@@ -31,12 +33,13 @@ def test_mapping_logic_no_spaces(sample_payload):
 	# Expected: [BOS] + [1, 2] + [SEP] + [13, 14] + [EOS]
 	assert ids == [100, 1, 2, 11, 13, 14, 101]
 
+
 def test_mapping_logic_with_spaces(sample_payload):
 	cfg = Config(unique_homophones=10, use_spaces=True)
 	cfg.bos_token_id = 100
 	cfg.eos_token_id = 101
-	cfg.sep_token = 11
-	cfg.space_token = 12
+	cfg.sep_token_id = 11
+	cfg.space_token_id = 12
 	cfg.char_offset = 13
 	cfg.max_context = 100
 

@@ -10,6 +10,7 @@ handler.setFormatter(EasyFormatter())
 logger = logging.getLogger("model.py")
 logger.addHandler(handler)
 
+
 class RawToArrowConverter:
 	"""Encapsulates the tokenization logic for testing and execution."""
 
@@ -38,20 +39,22 @@ class RawToArrowConverter:
 		"""
 		# Cipher mapping (splitting and handling _)
 		raw_cipher = example[self.c_key].split()
-		cipher_ids = [self.cfg.space_token if x == "_" else int(x) for x in raw_cipher]
+		cipher_ids = [
+			self.cfg.space_token_id if x == "_" else int(x) for x in raw_cipher
+		]
 
 		# Plaintext mapping (char by char)
 		plain_ids = []
 		for char in example[self.t_key]:
 			if char == "_":
-				plain_ids.append(self.cfg.space_token)
+				plain_ids.append(self.cfg.space_token_id)
 			elif "a" <= char <= "z":
 				plain_ids.append(ord(char) - ord("a") + self.cfg.char_offset)
 
 		input_ids = (
 			[self.cfg.bos_token_id]
 			+ cipher_ids
-			+ [self.cfg.sep_token]
+			+ [self.cfg.sep_token_id]
 			+ plain_ids
 			+ [self.cfg.eos_token_id]
 		)[: self.cfg.max_context]
