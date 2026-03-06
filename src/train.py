@@ -1,5 +1,6 @@
 import os
 import torch
+import argparse
 from model import get_model
 from transformers import Trainer, TrainingArguments
 from torch.nn.attention import sdpa_kernel, SDPBackend
@@ -16,15 +17,21 @@ handler.setFormatter(EasyFormatter())
 logger = logging.getLogger("model.py")
 logger.addHandler(handler)
 
+
 def train() -> None:
 	"""Start training the model with the given config."""
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--spaces", action="store_true")
+	cmd_args = parser.parse_args()
+
 	config = Config()
+	config.use_spaces = cmd_args.spaces
 	config.load_homophones()
 
 	model = get_model(config)
 
-	train_dataset = CipherPlainData(config, data_path=config.data_dir/"Training")
-	eval_dataset = CipherPlainData(config, data_path=config.data_dir/"Test")
+	train_dataset = CipherPlainData(config, split="Training")
+	eval_dataset = CipherPlainData(config, split="Test")
 
 	args = TrainingArguments(
 		output_dir=config.output_dir,
@@ -36,7 +43,6 @@ def train() -> None:
 		eval_strategy="steps",
 		eval_steps=config.log_steps,
 		per_device_eval_batch_size=config.batch_size,
-
 		# Faster to train without grad checkpoint
 		gradient_checkpointing=False,
 		logging_steps=config.log_steps,
@@ -59,7 +65,12 @@ def train() -> None:
 	with sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION]):
 		trainer.train()
 
-	trainer.save_model(f"{config.output_dir}/model")
+	if config.use_spaces:
+		save_dest = f"{config.output_dir}/model_with_spaces"
+	else:
+		save_dest = f"{config.output_dir}/model"
+
+	trainer.save_model(save_dest)
 
 
 if __name__ == "__main__":

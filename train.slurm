@@ -30,6 +30,6 @@ echo "Selected GPU: $GPU" | tee -a logs/train_live_${SLURM_JOB_ID}.log
 echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES" | tee -a logs/train_live_${SLURM_JOB_ID}.log
 nvidia-smi | tee -a logs/train_live_${SLURM_JOB_ID}.log
 
-uv run python -u src/train.py 2>&1 | tee -a logs/train_live_${SLURM_JOB_ID}.log
+uv run python -u src/train.py "$@" 2>&1 | tee -a logs/train_live_${SLURM_JOB_ID}.log
 
 echo "Job finished at $(date)" | tee -a logs/train_live_${SLURM_JOB_ID}.log
