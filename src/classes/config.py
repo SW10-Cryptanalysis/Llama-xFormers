@@ -5,14 +5,21 @@ import logging
 from easy_logging import EasyFormatter
 from pathlib import Path
 
-TEXT_LEN = 8_192
+TEXT_LEN = 10_000
 UNIQUE_HOMOPHONE_COUNT = 500
 UNIQUE_LETTER_COUNT = 26
 TOTAL_SEQ = TEXT_LEN * 2
 BUFFER = 8
 
 OUTPUT_DIR = Path(__file__).parent.parent.parent / "outputs"
-DATA_DIR = Path(__file__).parent.parent.parent.parent / "Ciphers"
+# DATA_DIR = Path(__file__).parent.parent.parent.parent / "Ciphers"
+DATA_DIR_DEFAULT = Path("/ceph/project/SW10-CausalLM/Ciphers")
+if not DATA_DIR_DEFAULT.exists():
+	# Fallback for local testing
+	DATA_DIR = Path(__file__).resolve().parents[3] / "Ciphers"
+else:
+	DATA_DIR = DATA_DIR_DEFAULT
+
 HOMOPHONE_FILE = "metadata.json"
 
 handler = logging.StreamHandler()
