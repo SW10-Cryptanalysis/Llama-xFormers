@@ -79,7 +79,7 @@ def preprocess_data() -> None:
 	converter = RawToArrowConverter(cfg)
 
 	# Load Raw JSONs
-	for split in ["Training", "Test"]:
+	for split in ["Training", "Test", "Validation"]:
 		logger.info("Converting %s (Spaces: %s)...", split, cfg.use_spaces)
 
 		# load_dataset returns a DatasetDict if split isn't specified
