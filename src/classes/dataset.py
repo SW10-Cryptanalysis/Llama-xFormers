@@ -66,14 +66,24 @@ class CipherPlainData(Dataset):
 		"""
 		item = self.dataset[idx]
 		
-		input_ids = torch.tensor(item["input_ids"], dtype=torch.long)
-		labels = torch.tensor(item["labels"], dtype=torch.long)
+		# 1. Grab raw lists from Arrow
+		input_ids = item["input_ids"]
+		labels = item["labels"]
+
+		# 2. Convert to tensors AND PAD immediately
+		max_len = self.config.max_context
 		
-		# Generate mask on the fly (1 for real tokens, 0 for padding)
-		attention_mask = (input_ids != 0).long() 
+		# Convert to tensor and pad/truncate in one go
+		input_tensor = torch.zeros(max_len, dtype=torch.long)
+		label_tensor = torch.full((max_len,), -100, dtype=torch.long) # -100 is ignored by Loss
+
+		# Fill with actual data (up to max_len)
+		actual_len = min(len(input_ids), max_len)
+		input_tensor[:actual_len] = torch.tensor(input_ids[:actual_len])
+		label_tensor[:actual_len] = torch.tensor(labels[:actual_len])
 
 		return {
-			"input_ids": input_ids,
-			"attention_mask": attention_mask,
-			"labels": labels,
+			"input_ids": input_tensor,
+			"attention_mask": (input_tensor != 0).long(),
+			"labels": label_tensor,
 		}

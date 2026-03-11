@@ -43,8 +43,8 @@ def train() -> None:
 		eval_strategy="steps",
 		eval_steps=config.log_steps,
 		per_device_eval_batch_size=config.batch_size,
-		# Faster to train without grad checkpoint
-		gradient_checkpointing=False,
+		gradient_checkpointing=True,
+		eval_accumulation_steps=4,
 		logging_steps=config.log_steps,
 		save_steps=config.save_steps,
 		# OOM without below
@@ -57,6 +57,7 @@ def train() -> None:
 		metric_for_best_model="eval_loss",
 		greater_is_better=False,
 		ignore_data_skip=True,
+		optim="adamw_torch_fused",
 	)
 
 	trainer = Trainer(
