@@ -58,7 +58,6 @@ def train() -> None:
 		greater_is_better=False,
 		ignore_data_skip=True,
 		optim="adamw_torch_fused",
-		torch_compile=True,
 	)
 
 	trainer = Trainer(
