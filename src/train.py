@@ -3,7 +3,6 @@ import torch
 import argparse
 from model import get_model
 from transformers import Trainer, TrainingArguments
-from torch.nn.attention import sdpa_kernel, SDPBackend
 import logging
 from easy_logging import EasyFormatter
 
