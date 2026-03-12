@@ -37,12 +37,13 @@ def get_model(config: Config) -> LlamaForCausalLM:
 		hidden_act="silu",
 		initializer_range=0.02,
 		rms_norm_eps=1e-5,  # type: ignore
-		attn_implementation="sdpa",
+		attn_implementation="flash_attention_2",
 		# Below saves memory during training, but dont know if it should be changed?
 		use_cache=False,
 	)
 
 	model = LlamaForCausalLM(conf)
+	model.to(torch.bfloat16)
 	logger.info("Llama Model loaded!")
 	logger.info(f"Parameters:       {model.num_parameters():,}")
 	logger.info(f"VRAM for Weights: {(model.get_memory_footprint() / 1e9):.4f} GB")

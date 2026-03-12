@@ -41,9 +41,10 @@ def train() -> None:
 		learning_rate=config.learning_rate,
 		# Eval
 		eval_strategy="steps",
-		eval_steps=config.eval_log_steps,
+		eval_steps=config.save_steps,
 		per_device_eval_batch_size=config.batch_size,
 		gradient_checkpointing=True,
+		gradient_checkpointing_kwargs={"use_reentrant": False},
 		eval_accumulation_steps=4,
 		logging_steps=config.log_steps,
 		save_steps=config.save_steps,
