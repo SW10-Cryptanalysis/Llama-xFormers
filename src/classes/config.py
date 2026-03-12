@@ -100,7 +100,7 @@ class Config:
 	epochs: int = 5
 	log_steps: int = 10
 	eval_log_steps: int = 1000
-	save_steps: int = 500
+	save_steps: int = 1000
 	use_spaces: bool = False
 
 	# SYSTEM
