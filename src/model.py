@@ -1,3 +1,4 @@
+import torch
 from transformers import LlamaConfig, LlamaForCausalLM
 import logging
 from easy_logging import EasyFormatter
