@@ -99,6 +99,7 @@ class Config:
 	learning_rate: float = 3e-4
 	epochs: int = 5
 	log_steps: int = 10
+	eval_log_steps: int = 1000
 	save_steps: int = 500
 	use_spaces: bool = False
 

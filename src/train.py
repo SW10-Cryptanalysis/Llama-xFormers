@@ -41,7 +41,7 @@ def train() -> None:
 		learning_rate=config.learning_rate,
 		# Eval
 		eval_strategy="steps",
-		eval_steps=config.log_steps,
+		eval_steps=config.eval_log_steps,
 		per_device_eval_batch_size=config.batch_size,
 		gradient_checkpointing=True,
 		eval_accumulation_steps=4,
@@ -70,7 +70,9 @@ def train() -> None:
 	checkpoint = None
 	if os.path.isdir(config.output_dir) and any(config.output_dir.iterdir()):
 		checkpoint = True
-		logger.info(f"Checkpoint detected in {config.output_dir} - Resuming training...")
+		logger.info(
+			f"Checkpoint detected in {config.output_dir} - Resuming training...",
+		)
 	else:
 		logger.info(f"Training on {torch.cuda.get_device_name(0)}...")
 

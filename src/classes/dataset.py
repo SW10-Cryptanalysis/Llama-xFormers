@@ -65,17 +65,18 @@ class CipherPlainData(Dataset):
 
 		"""
 		item = self.dataset[idx]
-		
+
 		# 1. Grab raw lists from Arrow
 		input_ids = item["input_ids"]
 		labels = item["labels"]
 
 		# 2. Convert to tensors AND PAD immediately
 		max_len = self.config.max_context
-		
+
 		# Convert to tensor and pad/truncate in one go
 		input_tensor = torch.zeros(max_len, dtype=torch.long)
-		label_tensor = torch.full((max_len,), -100, dtype=torch.long) # -100 is ignored by Loss
+		# -100 is ignored by Loss
+		label_tensor = torch.full((max_len,), -100, dtype=torch.long)
 
 		# Fill with actual data (up to max_len)
 		actual_len = min(len(input_ids), max_len)
