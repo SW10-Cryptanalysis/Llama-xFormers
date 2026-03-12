@@ -30,7 +30,7 @@ echo "Selected GPU: $GPU" | tee -a logs/train_live_${SLURM_JOB_ID}.log
 echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES" | tee -a logs/train_live_${SLURM_JOB_ID}.log
 nvidia-smi | tee -a logs/train_live_${SLURM_JOB_ID}.log
 
-uv pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl
+uv pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 
 uv run python -u src/train.py "$@" 2>&1 | tee -a logs/train_live_${SLURM_JOB_ID}.log
 

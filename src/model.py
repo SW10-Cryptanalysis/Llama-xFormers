@@ -29,6 +29,7 @@ def get_model(config: Config) -> LlamaForCausalLM:
 		num_attention_heads=config.att_heads,
 		num_key_value_heads=config.kv_heads,
 		rope_theta=config.rope_theta,
+		torch_dtype=torch.bfloat16,
 
 		pad_token_id=0,
 		bos_token_id=config.bos_token_id,
