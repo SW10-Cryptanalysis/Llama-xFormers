@@ -49,7 +49,7 @@ def train() -> None:
 		save_steps=config.save_steps,
 		# OOM without below
 		bf16=True,
-		dataloader_num_workers=4,
+		dataloader_num_workers=8,
 		dataloader_pin_memory=True,
 		# Checkpointing
 		save_total_limit=2,
@@ -58,6 +58,7 @@ def train() -> None:
 		greater_is_better=False,
 		ignore_data_skip=True,
 		optim="adamw_torch_fused",
+		torch_compile=True,
 	)
 
 	trainer = Trainer(
