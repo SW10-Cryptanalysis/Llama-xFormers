@@ -8,7 +8,7 @@ from easy_logging import EasyFormatter
 
 from classes import Config, CipherPlainData
 
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 
 
 handler = logging.StreamHandler()
